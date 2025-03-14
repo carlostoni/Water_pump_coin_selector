@@ -1,0 +1,73 @@
+int IN1 = 9;  // Motor 1
+int IN2 = 10;
+int ENA = 3;   // Motor 1 speed control (PWM)
+int IN3 = 4;   // Motor 2
+int IN4 = 5;
+int ENB = 6;   // Motor 2 speed control (PWM)
+
+int buttonPin1 = 12; // Botão 1 para Motor 1
+//int buttonPin2 = 12; // Botão 2 para Motor 2
+int pulsePin = 7;    // Entrada de pulsos
+
+volatile int pulseCount = 0;   // Contador de pulsos
+bool pulseReady = false;
+unsigned long lastPulseTime = 0;
+unsigned long pulseDebounceTime = 100; // Tempo mínimo entre pulsos (ms)
+
+void countPulse() {
+  unsigned long currentTime = millis();
+  if (currentTime - lastPulseTime > pulseDebounceTime) { // Evita ruídos
+    pulseCount++;
+    lastPulseTime = currentTime;
+    Serial.print("Pulsos contados: ");
+    Serial.println(pulseCount);
+    if (pulseCount >= 4) {
+      pulseReady = true;
+      Serial.println("4 pulsos recebidos! Pronto para ativar o motor.");
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(9600); // Ativa comunicação serial para depuração
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(ENA, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(buttonPin1, INPUT_PULLUP);
+ // pinMode(buttonPin2, INPUT_PULLUP);
+  pinMode(pulsePin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(pulsePin), countPulse, FALLING);
+}
+
+void loop() {
+  if (!pulseReady) return; // Se não recebeu 4 pulsos, não faz nada
+
+  if (digitalRead(buttonPin1) == LOW) {
+    Serial.println("Botão 1 pressionado, ativando Motor 1");
+    analogWrite(ENA, 200);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    delay(5000);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    pulseReady = false;
+    pulseCount = 0;
+    Serial.println("Motor 1 desligado, esperando novos pulsos");
+  }
+
+  //if (digitalRead(buttonPin2) == LOW) {
+   // Serial.println("Botão 2 pressionado, ativando Motor 2");
+    //analogWrite(ENB, 200);
+    //digitalWrite(IN3, HIGH);
+    //digitalWrite(IN4, LOW);
+   // delay(5000);
+    //digitalWrite(IN3, LOW);
+    //digitalWrite(IN4, LOW);
+   // pulseReady = false;
+   // pulseCount = 0;
+   // Serial.println("Motor 2 desligado, esperando novos pulsos");
+  //}
+}
