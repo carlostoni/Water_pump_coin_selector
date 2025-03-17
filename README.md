@@ -1,22 +1,23 @@
 # Arduino Project: Pulse-Based Motor Control with LCD Display
 
 ## Description
-This Arduino-based project controls a motor using pulse counting and a push button. It displays credit values on an I2C LCD screen and activates the motor when a specific amount is reached.
+This Arduino-based project controls a **12V water pump** using pulse counting and a push button. It displays credit values on an I2C LCD screen and activates the pump when a specific amount is reached.
 
 ## Components Used
-- **Arduino Board** (e.g., Arduino Uno, Arduino Micro, etc.)
-- **LCD Display (16x2) with I2C Module**
-- **DC Motor with L298N Driver or Similar**
-- **Push Button**
-- **Pulse Sensor (e.g., Hall Effect Sensor, Reed Switch, etc.)**
-- **Resistors and Wires**
+- **Arduino Micro** – Microcontroller to handle logic and control
+- **L298N Motor Driver** – Controls the 12V water pump
+- **12V Water Pump** – Activated when sufficient credits are collected
+- **Push Button** – Used to manually trigger the pump
+- **LCD Display (16x2) with I2C Module** – Displays credit balance
+- **Coin Selector** – Generates pulses based on inserted coins
+- **Resistors and Wires** – Additional electronic components for connections
 
 ## How It Works
-1. The system continuously monitors pulses received from a sensor.
-2. Each pulse corresponds to **R$ 0.25**, and after **12 pulses (R$ 3.00)**, the system becomes ready to activate the motor.
+1. The system continuously monitors pulses received from the **coin selector**.
+2. Each pulse corresponds to **R$ 0.25**, and after **12 pulses (R$ 3.00)**, the system becomes ready to activate the pump.
 3. The accumulated credit is displayed on the LCD.
-4. When the push button is pressed after collecting **R$ 3.00**, the motor activates for **5 seconds**.
-5. After motor activation, the pulse counter resets to zero, and the system waits for new pulses.
+4. When the **push button** is pressed after collecting **R$ 3.00**, the **pump** activates for **5 seconds**.
+5. After activation, the pulse counter resets to zero, and the system waits for new pulses.
 
 ## Code Breakdown
 
@@ -30,12 +31,12 @@ LiquidCrystal_I2C lcd(0x27,16,2); // Initialize LCD with I2C address 0x27
 
 ### Pin Definitions
 ```cpp
-int IN1 = 9;  // Motor 1
+int IN1 = 9;  // Motor 1 (Pump)
 int IN2 = 10;
-int ENA = 4;  // Motor 1 speed control (PWM)
+int ENA = 4;  // Pump speed control (PWM)
 
-int buttonPin1 = 12; // Push button for Motor 1
-int pulsePin = 7;    // Pulse input pin
+int buttonPin1 = 12; // Push button for activation
+int pulsePin = 7;    // Coin selector pulse input pin
 ```
 
 ### Variables for Pulse Counting
@@ -57,7 +58,7 @@ void countPulse() {
     Serial.println(pulseCount);
     if (pulseCount >= 12) { // 12 pulses equal R$ 3.00
       pulseReady = true;
-      Serial.println("12 pulses received! Ready to activate the motor.");
+      Serial.println("12 pulses received! Ready to activate the pump.");
     }
   }
 }
@@ -70,7 +71,7 @@ void setup() {
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
   pinMode(ENA, OUTPUT);
-
+ 
   pinMode(buttonPin1, INPUT_PULLUP);
   pinMode(pulsePin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(pulsePin), countPulse, FALLING);
@@ -93,7 +94,7 @@ void loop() {
   if (!pulseReady) return; // Do nothing if 12 pulses are not reached
 
   if (digitalRead(buttonPin1) == LOW) {
-    Serial.println("Button pressed, activating Motor 1");
+    Serial.println("Button pressed, activating Pump");
     analogWrite(ENA, 200);
     digitalWrite(IN1, HIGH);
     digitalWrite(IN2, LOW);
@@ -102,16 +103,22 @@ void loop() {
     digitalWrite(IN2, LOW);
     pulseReady = false;
     pulseCount = 0;
-    Serial.println("Motor deactivated, waiting for new pulses");
+    Serial.println("Pump deactivated, waiting for new pulses");
   }
 }
 ```
 
 ## Summary
-- The system **counts pulses** from a sensor and converts them into **monetary credit**.
-- When **R$ 3.00 is reached**, the system **allows motor activation** through a push button.
-- Pressing the **button activates the motor** for **5 seconds**.
+- The system **counts pulses** from the **coin selector** and converts them into **monetary credit**.
+- When **R$ 3.00 is reached**, the system **allows pump activation** through a push button.
+- Pressing the **button activates the 12V water pump** for **5 seconds**.
 - The system **resets** and waits for new pulses.
 
-This setup can be used for **coin/token-based machines, vending machines, or prepaid systems** that require pulse-based credit tracking.
+This setup can be used for **coin/token-based water dispensing machines, vending machines, or prepaid systems** that require pulse-based credit tracking.
+
+---
+
+## GIF Demonstration
+To see the system in action, add a GIF here showing the **coin selector, LCD updates, and pump activation**.
+![1](https://github.com/user-attachments/assets/1d0164c1-843c-4a76-8cd8-6f109b94f0af)
 
