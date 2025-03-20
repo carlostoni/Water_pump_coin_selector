@@ -117,8 +117,10 @@ void loop() {
 This setup can be used for **coin/token-based water dispensing machines, vending machines, or prepaid systems** that require pulse-based credit tracking.
 
 ---
+## Wiring Diagram
+![Untitled Sketch 2_bb](https://github.com/user-attachments/assets/6b9ea321-5a88-4253-b4b1-5511f0c7b89d)
 
-## GIF Demonstration
+## Demonstration
 To see the system in action, add a GIF here showing the **coin selector, LCD updates, and pump activation**.
 ![1](https://github.com/user-attachments/assets/1d0164c1-843c-4a76-8cd8-6f109b94f0af)
 
