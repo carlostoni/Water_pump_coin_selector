@@ -118,7 +118,8 @@ This setup can be used for **coin/token-based water dispensing machines, vending
 
 ---
 ## Wiring Diagram
-![Untitled Sketch 2_bb](https://github.com/user-attachments/assets/6b9ea321-5a88-4253-b4b1-5511f0c7b89d)
+
+![Untitled Sketch 2_bb](https://github.com/user-attachments/assets/96326703-69b4-489a-9b12-2ca1bf8e69f4)
 
 ## Demonstration
 To see the system in action, add a GIF here showing the **coin selector, LCD updates, and pump activation**.
